@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>滑动的导航条</title>
+	<style type="text/css">
+	#ul{
+		width: 360px;
+		height: 40px;
+		margin: 30px auto;
+		position: relative;
+		background: #eee;
+		padding: 0;
+		border-radius: 10px;
+	}
+	#ul li{
+		width: 80px;
+		height: 25px;
+		margin: 5px 5px;
+		padding: 0;
+		line-height: 25px;
+		list-style: none;
+		float: left;
+		text-align: center;
+		cursor:pointer;
+	}
+	#ul li.mli{
+		position: absolute;
+		width: 80px;
+		height: 25px;
+		background: red;
+		left: 0;
+		top:0;
+		opacity:0.5;
+		filter:alpha(opacity=50);
+		border-radius: 10px
+
+		}
+	</style>
+	<script src="move.js"></script>
+	<script type="text/javascript">
+	//导航条原理：利用加速和减速，加速越跑越快，减速会到减速到speed等于0就返回。模拟摩擦力:将speed*=0.7，最后ispeed等于0；
+	window.onload=function(){
+		var oUl=document.getElementById('ul');
+		var aLi=oUl.getElementsByTagName('li');
+		var iSpeed=0;
+		var iLeft=0;
+		var timer=null;
+		for(i=0;i<aLi.length-1;i++){//运动的那个li不遍历
+			aLi[i].onmouseover=function(){
+				tMove(aLi[aLi.length-1],this.offsetLeft)
+			}
+
+		}
+
+	function tMove(obj,iTarget){
+		clearInterval(timer);
+		timer=setInterval(function(){
+			iSpeed+=(iTarget-obj.offsetLeft)/5;//速度公式
+			iSpeed*=0.7;//模拟摩擦力
+			iLeft+=iSpeed;
+			if(Math.abs(iSpeed<1)&&Math.abs(obj.offsetLeft<1)){
+				clearInterval(timer);
+				obj.style.left=iTarget+'px';
+			}else{
+			obj.style.left=iLeft+'px';			
+			}
+		},30)
+	}
+
+}
+	</script>
+</head>
+<body>
+	<ul id="ul">
+		<li>首页</li>
+		<li>个人介绍</li>
+		<li>客服中心</li>
+		<li>娱乐天地</li>
+		<li class="mli"></li>
+	</ul>
+</body>
+</html>

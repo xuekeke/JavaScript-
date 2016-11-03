@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>仿flash图片展示效果</title>
+	<style type="text/css">
+	#backg{
+		width: 640px;
+		height: 600px;
+		background: #eee;
+		margin:0 auto;
+		position: relative;	
+		overflow: hidden;
+	}
+	#backg .bigPic{
+		width: 640px;
+		height: 450px;
+	}
+	#backg .bigPic ul{
+		width: 640px;
+		height: 450px;
+		position:relative;
+		margin: 0;
+		padding: 0;
+	}	
+	#backg .bigPic ul li{
+		margin: 0;
+		padding: 0;
+		width: 640px;
+		height: 450px;
+		position: absolute;
+		top: 0;
+		left: 0;
+		list-style:none;
+
+	}
+	#backg .bigPic ul li img{
+		width: 640px;
+		height: 450px;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+	#backg .bigPic .leftP{
+		width: 300px;
+		height: 450px;
+		position: absolute;
+		left: 0;
+		top:0;
+		z-index: 300;
+	}
+	#backg .bigPic .rightP{
+		width: 300px;
+		height: 450px;
+		position: absolute;
+		right: 0;
+		top:0;
+		z-index: 300;
+	}
+	#backg .bigPic .lBtn{
+		background: url(img/btnl.png);
+		width: 100px;
+		height: 100px;
+		position: absolute;
+		left: 0;
+		top: 175px;
+		z-index: 301;
+		opacity: 0;
+		filter:alpha(opacity=0);
+		cursor:pointer;
+	}
+	#backg .bigPic .rBtn{
+		background: url(img/btnr.png);
+		width: 100px;
+		height: 100px;
+		position: absolute;
+		right: 0;
+		top: 175px;
+		z-index: 301;
+		opacity: 0;
+		filter:alpha(opacity=0);
+		cursor: pointer;
+	}
+
+	#backg .smallPic,ul{
+		margin: 0;
+		padding: 0;
+		width: 640px;
+		height: 150px;
+		position: absolute;
+	}
+	#backg .smallPic ul li{
+		margin-left: 10px;
+		padding: 0;
+		height: 150px;
+		width: 200px;
+		float: left;
+		opacity:0.5;
+		filter:alpha(opacity=50); 
+		list-style: none;
+	}
+	</style>
+</head>
+<script src="move.js"></script>
+<script type="text/javascript">	
+	//封装获取class
+	function getClass(oparent,sClass){
+	var ali=oparent.getElementsByTagName('*')
+	var aResult=[];
+		for(i=0;i<ali.length;i++){
+		if(ali[i].className==sClass){
+			aResult.push(ali[i]);
+		}
+	}
+				return aResult;		
+	}
+
+	window.onload=function(){
+		var oDiv=document.getElementById('backg');
+		var oBig=getClass(oDiv,'bigPic')[0];
+		var oBul=getClass(oBig,'bigUl')[0];
+		var oLeft=getClass(oBig,'leftP')[0];
+		var oRight=getClass(oBig,'rightP')[0];
+		var oLBtn=getClass(oBig,'lBtn')[0];
+		var oRBtn=getClass(oBig,'rBtn')[0];
+		var aBli=oBul.getElementsByTagName('li');
+
+		var oSml=getClass(oDiv,'smallPic')[0];
+		var oSul=getClass(oSml,'smallUl')[0];
+		var aSli=oSul.getElementsByTagName('li');
+		var initIndex=2;
+		var now=0;
+	 oSul.style.width=aSli[0].offsetWidth*aSli.length+50+'px';
+	move(aSli[now],'opacity',100)//初始当前小图当前的不透明
+
+	for(var i=0;i<aSli.length;i++){
+		aSli[i].index=i;//将i赋值给li作为索引,给aSli[i]添加了index属性
+		aSli[i].onclick=function(){		
+			if(this.index==now)return;
+			now=this.index;
+			tab();
+		}
+		aSli[i].onmouseover=function(){
+			move(this,'opacity',100)
+		}
+		aSli[i].onmouseout=function(){
+			if(this.index!=now)move(this,'opacity',50);
+		}	
+	}
+
+	oRBtn.onclick=function(){
+		now++;
+		if(now==aBli.length)now=0;
+		tab();
+	}
+
+	oLBtn.onclick=function(){
+		if(now==0)now=aBli.length;
+		now--;
+		tab();
+	}
+	//运动时的封装
+	function tab(){
+		aBli[now].style.zIndex=initIndex++;
+		for(var i=0;i<aSli.length;i++){//当点击时，把所有的li都加上透明,
+			move(aSli[i],'opacity',50);				
+		}
+		move(aSli[now],'opacity',100)//唯独当前的不透明
+		console.log(now)
+		aBli[now].style.height=0;
+		move(aBli[now],'height',450);
+		if(now==0){
+			move(oSul,'left',0)			
+		}else if(now==aSli.length-1){
+			move(oSul,'left',-(now-2)*aSli[0].offsetWidth)	
+		}else{
+			move(oSul,'left',-(now-1)*aSli[0].offsetWidth);	
+		}
+	}
+	//	按钮的显隐
+	oLBtn.onmouseover=oLeft.onmouseover=function(){
+		move(oLBtn,"opacity",80);
+	};
+	oLBtn.onmouseout=oLeft.onmouseout=function(){
+		move(oLBtn,"opacity",0);
+	};
+	oRBtn.onmouseover=oRight.onmouseover=function(){
+		move(oRBtn,"opacity",80);
+	};
+	oRBtn.onmouseout=oRight.onmouseout=function(){
+		move(oRBtn,"opacity",0);
+	};
+
+	//自动轮播
+	timer=setInterval(oRBtn.onclick,1500);
+	oDiv.onmouseover=function(){
+		clearInterval(timer);
+	}
+	oDiv.onmouseout=function(){
+		timer=setInterval(oRBtn.onclick,1500);
+	}
+}
+</script>
+<div id="backg">
+	<div class="bigPic">
+		<ul class="bigUl">
+			<li><img style="z-index:2" src="img/pic1.jpg"></li>
+			<li><img src="img/pic2.jpg"></li>
+			<li><img src="img/pic3.jpg"></li>
+			<li><img src="img/pic4.jpg"></li>
+			<li><img src="img/pic5.jpg"></li>
+		</ul>
+		<div class="leftP"></div>
+		<div class="rightP"></div>
+		<div class="lBtn"></div>
+		<div class="rBtn"></div>
+	</div>
+	<div class="smallPic">
+		<ul class="smallUl">
+			<li><img src="img/pic1.png"></li>
+			<li><img src="img/pic2.png"></li>
+			<li><img src="img/pic3.png"></li>
+			<li><img src="img/pic4.png"></li>
+			<li><img src="img/pic5.png"></li>
+		</ul>
+	</div>
+</div>
+
+<body>
+	<div></div>
+</body>
+</html>

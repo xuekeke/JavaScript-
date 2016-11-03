@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>照片墙,可做拼图游戏</title>
+	<style type="text/css">
+	*{
+		margin:0;
+		padding: 0;
+	}
+	ul{
+		width: 630px;
+		margin: 100px auto;
+		position:relative;
+	}
+	ul li{
+		width: 200px;
+		height: 150px;
+		list-style: none;
+		margin: 5px;
+		z-index: 1px;
+	}
+	.active{
+		border:1px dashed #eee;
+	}
+	</style>
+	<script src="move.js"></script>
+	<script type="text/javascript">
+	window.onload=function(){
+		var oUl=document.getElementById('ul');
+		var aLi=oUl.getElementsByTagName('img');
+		var i=0;
+		var aPos=[];
+		var curIndex=2;
+		//布局转换，变成绝对定位
+		for(i=0;i<aLi.length;i++){
+			aPos[i]={left:aLi[i].offsetLeft,top:aLi[i].offsetTop
+			}
+		}
+		for(i=0;i<aLi.length;i++){
+			aLi[i].style.left=aPos[i].left+'px';
+			aLi[i].style.top=aPos[i].top+'px';
+			aLi[i].style.position='absolute';
+			aLi[i].style.margin=0;
+			aLi[i].index=i;
+		}
+		for(i=0;i<aLi.length;i++){
+			setDrag(aLi[i]);
+		}
+		function setDrag(obj){
+			obj.onmousedown=function(evt){
+				obj.style.zIndex=curIndex++;
+				var oEvent=evt||event;
+				var disX=oEvent.clientX-obj.offsetLeft;
+				var disY=oEvent.clientY-obj.offsetTop;
+				document.onmousemove=function(evt){
+					var oEvent=evt||event;
+					var l=oEvent.clientX-disX;
+					var t=oEvent.clientY-disY
+					obj.style.left=l+'px';
+					obj.style.top=t+'px';	
+					for(i=0;i<aLi.length;i++){
+						aLi[i].className='';
+						}
+						var result=findNear(obj);		
+						if(result){
+							result.className='active';				
+						}
+
+	
+				}
+				document.onmouseup=function(){
+					document.onmousemove=null;	
+					document.onmouseup=null;
+					var near=findNear(obj);
+					if(near){
+						near.className='';
+						near.style.zIndex=curIndex++;
+						perMove(near,{left:aPos[obj.index].left,top:aPos[obj.index].top});
+						perMove(obj,{left:aPos[near.index].left,top:aPos[near.index].top})
+						var changeIndex=0;//交换两个图片的index
+						changeIndex=near.index;
+						near.index=obj.index;
+						obj.index=changeIndex;
+					}else{
+						perMove(obj,{left:aPos[obj.index].left,top:aPos[obj.index].top});
+					}
+
+				}
+				clearInterval(obj.timer)
+				return false;
+			}
+
+		}
+		function getDis(obj,obj1){
+			var x=obj.offsetLeft-obj1.offsetLeft;
+			var y=obj.offsetTop-obj1.offsetTop;
+			return Math.sqrt(x*x+y*y);
+		}
+		function findNear(obj){//拖拽时找到最近的
+			var iMin=999999;
+			var iMinIndex=-1;
+			for(i=0;i<aLi.length;i++){
+				if(obj==aLi[i])continue;
+				if(crash(obj,aLi[i])){
+				var dis=getDis(obj,aLi[i]);	
+				if(dis<iMin){
+					iMin=dis;
+					iMinIndex=i;						
+				}
+												
+				}
+			}
+			if(iMinIndex==-1){
+				return null;
+
+			}else{
+				return aLi[iMinIndex];
+			}
+		}
+		function crash(obj,aobj){//碰撞检测
+			var aobjL=aobj.offsetLeft;
+			var aobjT=aobj.offsetTop;
+			var aobjR=aobj.offsetLeft+aobj.offsetWidth;
+			var aobjB=aobj.offsetTop+aobj.offsetHeight;
+			var objL=obj.offsetLeft;
+			var objT=obj.offsetTop;
+			var objR=obj.offsetLeft+obj.offsetWidth;
+			var objB=obj.offsetTop+obj.offsetHeight;
+			if(objL>aobjR||objT>aobjB||objR<aobjL||objB<aobjT){
+				return false;
+			}else{
+				return true;
+			}
+		}
+	}
+	</script>
+</head>
+<body>
+	<ul id="ul">
+	<img src="img/pic1.png" >
+	<img src="img/pic2.png" >
+	<img src="img/pic3.png" >
+	<img src="img/pic4.png" >
+	<img src="img/pic5.png" >
+	<img src="img/pic1.png" >
+	<img src="img/pic2.png" >
+	<img src="img/pic3.png" >
+	<img src="img/pic4.png" >			
+	</ul>
+</body>
+</html>

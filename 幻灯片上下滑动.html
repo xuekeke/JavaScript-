@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>幻灯片上下滑动</title>
+	<style type="text/css">
+	#div{
+		width: 200px;
+		height: 150px;
+		margin: 200px auto;
+		position: relative;
+		background: blue;
+		overflow: hidden;
+	}
+	.num{
+		position: absolute;
+		margin: 0px;
+		padding: 0px;
+		right: 0;
+		top: 130px;
+		width: 120px;
+		height: 20px;
+		list-style: none;
+		float: right;
+		background: red;
+		z-index: 222;	
+	}
+	.num li{
+		color: #fff;
+		margin: 0px;
+		padding: 0px;
+		width:18px; 
+		height: 20px;
+		line-height: 20px;
+		background: orange;
+		border:1px solid #ccc; 
+		float: left;
+		text-align: center;
+		cursor: pointer;
+	}
+	li.active{
+		background: #ccc;
+	}
+	.pic{
+		width: 200px;
+		height: 150px;
+		position: absolute;
+		top: 0;
+		left:0;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.pic li{
+		width: 200px;
+		height: 150px;
+		margin: 0;
+		padding: 0;		
+	}
+	</style>
+<script src="move.js"></script>
+<script type="text/javascript">
+
+	window.onload=function(){
+		var oDiv=document.getElementById('div');
+		var oNul=getClass(oDiv,'num')[0];
+		var aNli=oNul.getElementsByTagName('li');
+		var oPul=getClass(oDiv,'pic')[0];
+		var aPli=oPul.getElementsByTagName('li');
+		var now=0;
+		for(i=0;i<aNli.length;i++){
+			aNli[i].index=i;
+			aNli[i].onclick=function(){
+				now=this.index;
+				tab();	
+			}
+		}			
+
+		function tab(){
+			for(i=0;i<aNli.length;i++){
+				aNli[i].className='';	
+			}
+				aNli[now].className='active';
+				perMove(oPul,{top:-150*now});
+			}			
+		function next(){
+			now++;
+			if(now==aNli.length)now=0;
+			tab();
+		}
+		timer=setInterval(next,1500);
+		oDiv.onmouseover=function(){
+			clearInterval(timer);
+		}
+		oDiv.onmouseout=function(){
+			timer=setInterval(next,1500);
+		}
+	}	
+</script>
+</head>
+<body>
+	<div id="div">
+		<ul class="num">
+			<li>1</li>
+			<li>2</li>
+			<li>3</li>
+			<li>4</li>
+			<li>5</li>
+			<li>6</li>
+		</ul>
+		<ul class="pic">
+			<li><img src="img/pic1.png"></li>
+			<li><img src="img/pic2.png"></li>
+			<li><img src="img/pic3.png"></li>
+			<li><img src="img/pic4.png"></li>
+			<li><img src="img/pic5.png"></li>
+			<li><img src="img/pic3.png"></li>
+		</ul>
+
+</body>
+</html>

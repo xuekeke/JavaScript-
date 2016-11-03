@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>无缝滚动</title>
+	<style type="text/css">
+	body{
+		margin: 0;
+		padding: 0;
+	}
+	div{
+		width:620px;
+		height: 102px;
+		margin: 20px auto;
+		border: 1px  solid #eee;
+		position:relative;
+		overflow: hidden;
+	}
+	ul{
+		width:1260px;
+		height: 100px;
+		margin: 0;
+		padding: 0;	
+		position: absolute;	
+		border: 1px solid #000;
+	}
+	ul>li{
+		width: 150px;
+		height: 100px;
+		padding-right: 7px;
+		margin: 0;
+		list-style:none;
+		float: left; 
+	}
+	ul>li>img{
+		margin: 0;
+		padding: 0;
+		width: 150px;
+		height: 100px;		
+	}
+	</style>
+	<script src="move.js"></script>;
+	<script type="text/javascript">
+	//后面紧跟一条相同的li，以便最后一张紧挨第一张，走到一半拉回来，无缝滚动的方式很多
+
+	window.onload=function(){
+	var oDiv=document.getElementById('div');
+	var oBg=document.getElementById('bg');
+	var timer=null
+	auto();
+	function auto(){
+	clearInterval(timer);
+	timer=setInterval(function(){
+		var iSpeed=7;
+		oDiv.style.left=oDiv.offsetLeft-iSpeed+'px';
+		if(oDiv.offsetLeft<-630)oDiv.style.left=0;
+	},100);		
+	}
+	oBg.onmouseover=function(){
+		clearInterval(timer);
+	}
+	oBg.onmouseout=function(){
+		auto();
+	}
+}
+
+	</script>
+</head>
+<body>
+	<div id='bg'>
+		<ul id="div">
+			<li><img src="img/pic1.png"></li>
+			<li><img src="img/pic2.png"></li>
+			<li><img src="img/pic3.png"></li>
+			<li><img src="img/pic4.png"></li>
+			<li><img src="img/pic1.png"></li>
+			<li><img src="img/pic2.png"></li>
+			<li><img src="img/pic3.png"></li>
+			<li><img src="img/pic4.png"></li>
+		</ul>		
+	</div>
+</body>
+</html>
